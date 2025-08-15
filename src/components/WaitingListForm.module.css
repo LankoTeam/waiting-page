@@ -19,31 +19,32 @@
   height: 100%;
   padding: 0 1rem;
   padding-right: 110px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   font-size: 1rem;
-  background-color: white;
+  background-color: var(--card-background);
+  color: var(--foreground);
   transition: all 0.2s;
   box-sizing: border-box;
 }
 
 .input:hover {
-  border-color: #cbd5e0;
+  border-color: var(--hover-border);
 }
 
 .input:focus {
-  border-color: #2a75ff;
-  box-shadow: 0 0 0 1px #2a75ff;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 1px var(--brand-primary);
   outline: none;
 }
 
 .inputError {
-  border-color: #e53e3e;
+  border-color: var(--error-text);
 }
 
 .inputError:hover, .inputError:focus {
-  border-color: #e53e3e;
-  box-shadow: 0 0 0 1px #e53e3e;
+  border-color: var(--error-text);
+  box-shadow: 0 0 0 1px var(--error-text);
 }
 
 .button {
@@ -51,7 +52,7 @@
   top: 7px;
   right: 7px;
   bottom: 7px;
-  background-color: #2a75ff;
+  background-color: var(--brand-primary);
   color: white;
   border: none;
   border-radius: 6px;
@@ -59,25 +60,27 @@
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
   line-height: 40px; /* 确保文字垂直居中 */
 }
 
 .button:hover {
-  background-color: #1156e6;
+  background-color: var(--brand-secondary);
+  transform: translateY(-1px);
 }
 
 .button:active {
-  background-color: #0043b3;
+  background-color: var(--brand-secondary);
+  transform: translateY(0);
 }
 
 .button:disabled {
-  background-color: #718096;
+  background-color: var(--text-muted);
   cursor: not-allowed;
 }
 
 .errorMessage {
-  color: #e53e3e;
+  color: var(--error-text);
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
@@ -86,14 +89,15 @@
   padding: 0.75rem;
   border-radius: 0.375rem;
   margin-top: 0.75rem;
+  transition: all 0.3s ease;
 }
 
 .successMessage {
-  background-color: #edf9eb;
-  color: #276749;
+  background-color: var(--success-bg);
+  color: var(--success-text);
 }
 
 .errorMessageBox {
-  background-color: #fef0ef;
-  color: #c53030;
+  background-color: var(--error-bg);
+  color: var(--error-text);
 }

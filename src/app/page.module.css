@@ -2,7 +2,8 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(to bottom, #f0f7ff, #ffffff);
+  background: linear-gradient(to bottom, var(--gradient-start), var(--gradient-end));
+  transition: background 0.3s ease;
 }
 
 .main {
@@ -38,22 +39,25 @@
 .title {
   font-size: 3rem;
   font-weight: 700;
-  color: #0043b3;
+  color: var(--brand-secondary);
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 .subtitle {
   font-size: 1.5rem;
   font-weight: 500;
-  color: #4a5568;
+  color: var(--text-secondary);
   margin: 0.5rem 0;
+  transition: color 0.3s ease;
 }
 
 .description {
   font-size: 1.125rem;
-  color: #4a5568;
+  color: var(--text-secondary);
   max-width: 700px;
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 .formContainer {
@@ -65,7 +69,7 @@
 .footer {
   padding: 1.5rem 1rem;
   text-align: center;
-  border-top: 1px solid #edf2f7;
+  border-top: 1px solid var(--footer-border);
 }
 
 .footerContent {
@@ -77,9 +81,10 @@
 }
 
 .copyright {
-  color: #718096;
+  color: var(--text-muted);
   font-size: 0.875rem;
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 .links {
@@ -89,14 +94,14 @@
 }
 
 .link {
-  color: #718096;
+  color: var(--text-muted);
   font-size: 0.875rem;
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .link:hover {
-  color: #2a75ff;
+  color: var(--brand-primary);
   text-decoration: underline;
 }
 

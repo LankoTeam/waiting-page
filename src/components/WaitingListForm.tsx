@@ -1,26 +1,40 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Box, Input, Button, Alert } from '@chakra-ui/react'
+import { captchaConfig } from '@/config/captcha'
+
+// 声明全局TencentCaptcha类型
+declare global {
+  interface Window {
+    TencentCaptcha: any;
+  }
+}
 
 export default function WaitingListForm() {
   const [email, setEmail] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState<{text: string, type: 'success'|'error'}|null>(null)
+  const [captchaReady, setCaptchaReady] = useState(false)
+
+  // 检查腾讯云验证码SDK是否加载完成
+  useEffect(() => {
+    const checkCaptchaReady = () => {
+      if (typeof window !== 'undefined' && window.TencentCaptcha) {
+        setCaptchaReady(true)
+      } else {
+        setTimeout(checkCaptchaReady, 100)
+      }
+    }
+    checkCaptchaReady()
+  }, [])
 
   // 简单的邮箱验证
   const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    // 验证邮箱
-    if (!isValidEmail(email)) {
-      setIsError(true)
-      return
-    }
-    
+  // 提交表单到后端，包含验证码票据
+  const submitWithCaptcha = async (ticket: string, randstr: string) => {
     setIsLoading(true)
     setIsError(false)
     setMessage(null)
@@ -31,7 +45,11 @@ export default function WaitingListForm() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ 
+          email,
+          ticket,
+          randstr 
+        }),
       })
 
       const data = await response.json()
@@ -56,6 +74,66 @@ export default function WaitingListForm() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    // 清除之前的错误状态
+    setIsError(false)
+    setMessage(null)
+    
+    // 检查邮箱是否为空
+    if (!email.trim()) {
+      setIsError(true)
+      setMessage({
+        text: '请输入邮箱地址',
+        type: 'error'
+      })
+      return
+    }
+    
+    // 验证邮箱格式
+    if (!isValidEmail(email)) {
+      setIsError(true)
+      setMessage({
+        text: '请输入有效的电子邮箱地址',
+        type: 'error'
+      })
+      return
+    }
+
+    // 检查验证码SDK是否准备就绪
+    if (!captchaReady || !window.TencentCaptcha) {
+      setMessage({
+        text: '验证码组件正在加载中，请稍后再试。',
+        type: 'error'
+      })
+      return
+    }
+    
+    // 初始化腾讯云验证码（快速接入方式）
+    const captcha = new window.TencentCaptcha(
+      document.body, // 挂载元素
+      "189934257", // 您的CaptchaAppId
+      function(res: any) {
+        if (res.ret === 0) {
+          // 验证成功，获取票据
+          const { ticket, randstr } = res
+          submitWithCaptcha(ticket, randstr)
+        } else {
+          // 验证失败或用户取消
+          setMessage({
+            text: '验证码验证失败，请重试。',
+            type: 'error'
+          })
+        }
+      },
+      {} // 配置项
+    )
+
+    // 显示验证码
+    captcha.show()
   }
 
   return (
@@ -116,33 +194,20 @@ export default function WaitingListForm() {
           </Button>
         </Box>
         
-        {isError && (
+        {/* 只显示一个Alert，优先显示message，如果没有message则显示isError */}
+        {(message || isError) && (
           <Alert.Root 
-            status="error" 
-            size="sm" 
-            mt={2}
+            status={message?.type || "error"}
+            mt={3}
             borderRadius="md"
           >
             <Alert.Indicator />
             <Alert.Title fontSize="sm">
-              请输入有效的电子邮箱地址
+              {message?.text || "请输入有效的电子邮箱地址"}
             </Alert.Title>
           </Alert.Root>
         )}
       </Box>
-      
-      {message && (
-        <Alert.Root 
-          status={message.type}
-          mt={3}
-          borderRadius="md"
-        >
-          <Alert.Indicator />
-          <Alert.Title>
-            {message.text}
-          </Alert.Title>
-        </Alert.Root>
-      )}
     </Box>
   )
 }

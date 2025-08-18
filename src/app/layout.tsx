@@ -20,6 +20,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
+      <head>
+        <script 
+          src="https://ca.turing.captcha.qcloud.com/TJNCaptcha-global.js" 
+          async
+        ></script>
+      </head>
       <body className={`${inter.variable} antialiased`}>
         <Providers>
           {children}

@@ -48,7 +48,7 @@ export default function WaitingListForm() {
           type: 'error'
         })
       }
-    } catch (error) {
+    } catch {
       setMessage({
         text: '抱歉，提交过程中出现了问题，请稍后再试。',
         type: 'error'

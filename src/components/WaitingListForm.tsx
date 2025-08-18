@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Box, Input, Button } from '@chakra-ui/react'
+import { Box, Input, Button, Alert } from '@chakra-ui/react'
 
 export default function WaitingListForm() {
   const [email, setEmail] = useState('')
@@ -107,24 +107,31 @@ export default function WaitingListForm() {
         </Box>
         
         {isError && (
-          <Box color="var(--error-text)" fontSize="sm" mt={1}>
-            请输入有效的电子邮箱地址
-          </Box>
+          <Alert.Root 
+            status="error" 
+            size="sm" 
+            mt={2}
+            borderRadius="md"
+          >
+            <Alert.Indicator />
+            <Alert.Title fontSize="sm">
+              请输入有效的电子邮箱地址
+            </Alert.Title>
+          </Alert.Root>
         )}
       </Box>
       
       {message && (
-        <Box 
-          p={3}
-          borderRadius="md"
+        <Alert.Root 
+          status={message.type}
           mt={3}
-          bg={message.type === 'success' ? 'var(--success-bg)' : 'var(--error-bg)'}
-          borderColor={message.type === 'success' ? 'var(--success-text)' : 'var(--error-text)'}
-          borderWidth="1px"
-          color={message.type === 'success' ? 'var(--success-text)' : 'var(--error-text)'}
+          borderRadius="md"
         >
-          {message.text}
-        </Box>
+          <Alert.Indicator />
+          <Alert.Title>
+            {message.text}
+          </Alert.Title>
+        </Alert.Root>
       )}
     </Box>
   )

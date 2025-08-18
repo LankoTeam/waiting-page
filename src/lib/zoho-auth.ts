@@ -66,7 +66,6 @@ export class ZohoAuth {
     console.log('Using access token:', accessToken.substring(0, 10) + '...');
     return new Headers({
       'Authorization': `Zoho-oauthtoken ${accessToken}`,
-      'Content-Type': 'application/json',
     });
   }
 }

@@ -26,29 +26,29 @@ export async function POST(request: Request) {
 
     const headers = await ZohoAuth.getHeaders();
     
-    // 构建请求体
-    const requestBody = {
-      listkey: listKey,
-      contactinfo: {
-        Contact_Email: email,
-        Contact_Source: 'LANKO Waiting List',
-        First_Name: email.split('@')[0],
-      },
+    // 构建请求 URL 和参数
+    const params = new URLSearchParams({
       resfmt: 'JSON',
-    };
-
-    console.log('Sending request to Zoho Campaigns:', {
-      url: `${baseUrl}/json/listsubscribe`,
-      body: requestBody
+      listkey: listKey,
+      emailids: email // 单个邮箱地址
     });
 
-    // 构建 Zoho Campaigns API 请求
+    const url = `${baseUrl}/addlistsubscribersinbulk?${params.toString()}`;
+
+    console.log('Sending request to Zoho Campaigns:', {
+      url,
+      params: Object.fromEntries(params)
+    });
+
+    // 构建请求头
+    const requestHeaders = new Headers(headers);
+    requestHeaders.set('Content-Type', 'application/x-www-form-urlencoded');
+
     const response = await fetch(
-      `${baseUrl}/json/listsubscribe`,
+      url,
       {
         method: 'POST',
-        headers,
-        body: JSON.stringify(requestBody),
+        headers: requestHeaders
       }
     );
 

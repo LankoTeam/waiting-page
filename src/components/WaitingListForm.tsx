@@ -2,13 +2,32 @@
 
 import { useState, useEffect } from 'react'
 import { Box, Input, Button, Alert } from '@chakra-ui/react'
-import { captchaConfig } from '@/config/captcha'
 
 // 声明全局TencentCaptcha类型
 declare global {
   interface Window {
-    TencentCaptcha: any;
+    TencentCaptcha: new (
+      container: HTMLElement,
+      appId: string,
+      callback: (res: TencentCaptchaResponse) => void,
+      options?: Record<string, unknown>
+    ) => TencentCaptchaInstance;
   }
+}
+
+// 腾讯云验证码响应类型
+interface TencentCaptchaResponse {
+  ret: number;
+  ticket: string;
+  randstr: string;
+  appid: string;
+  bizState?: string;
+}
+
+// 腾讯云验证码实例类型
+interface TencentCaptchaInstance {
+  show: () => void;
+  destroy: () => void;
 }
 
 export default function WaitingListForm() {
@@ -116,7 +135,7 @@ export default function WaitingListForm() {
     const captcha = new window.TencentCaptcha(
       document.body, // 挂载元素
       "189934257", // 您的CaptchaAppId
-      function(res: any) {
+      function(res: TencentCaptchaResponse) {
         if (res.ret === 0) {
           // 验证成功，获取票据
           const { ticket, randstr } = res

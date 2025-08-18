@@ -1,6 +1,5 @@
 import { ZohoAuth } from '@/lib/zoho-auth';
 import { NextResponse } from 'next/server';
-import { captchaConfig, validateCaptchaConfig } from '@/config/captcha';
 
 // 腾讯云验证码校验函数
 async function verifyCaptcha(ticket: string, randstr: string, userIp: string): Promise<boolean> {

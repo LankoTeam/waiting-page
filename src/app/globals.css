@@ -48,3 +48,5 @@ body {
   -moz-osx-font-smoothing: grayscale;
   transition: background 0.3s ease, color 0.3s ease;
 }
+
+/* 氛围光晕效果 - 使用radial-gradient和filter:blur实现 */

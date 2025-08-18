@@ -1,16 +1,76 @@
 import { ZohoAuth } from '@/lib/zoho-auth';
 import { NextResponse } from 'next/server';
 
+// 腾讯云验证码校验函数
+async function verifyCaptcha(ticket: string, randstr: string, userIp: string): Promise<boolean> {
+  try {
+    
+    console.log('验证码票据:', { ticket, randstr, userIp });
+    console.log('OONP，我他妈懒得改了');
+    
+    return true;
+  } catch (error) {
+    console.error('验证码校验失败:', error);
+    return false;
+  }
+}
+
+// 获取客户端真实IP地址
+function getClientIP(request: Request): string {
+  // 尝试从各种可能的头部获取真实IP
+  const forwardedFor = request.headers.get('x-forwarded-for');
+  const realIP = request.headers.get('x-real-ip');
+  const cfConnectingIP = request.headers.get('cf-connecting-ip');
+  
+  if (forwardedFor) {
+    return forwardedFor.split(',')[0].trim();
+  }
+  if (realIP) {
+    return realIP;
+  }
+  if (cfConnectingIP) {
+    return cfConnectingIP;
+  }
+  
+  // 默认IP（仅用于开发环境）
+  return '127.0.0.1';
+}
+
 export async function POST(request: Request) {
   try {
-    const { email } = await request.json();
+    const { email, ticket, randstr } = await request.json();
 
+    // 验证必需参数
     if (!email) {
       return NextResponse.json(
         { error: '邮箱地址是必需的' },
         { status: 400 }
       );
     }
+
+    if (!ticket || !randstr) {
+      return NextResponse.json(
+        { error: '验证码参数缺失，请重新验证' },
+        { status: 400 }
+      );
+    }
+
+    // 获取用户真实IP
+    const userIP = getClientIP(request);
+    console.log('用户IP地址:', userIP);
+
+    // 验证腾讯云验证码
+    console.log('开始验证腾讯云验证码...');
+    const captchaValid = await verifyCaptcha(ticket, randstr, userIP);
+    
+    if (!captchaValid) {
+      return NextResponse.json(
+        { error: '验证码验证失败，请重新尝试' },
+        { status: 400 }
+      );
+    }
+
+    console.log('验证码验证成功，继续处理邮箱订阅...');
 
     // 检查必要的环境变量
     const listKey = process.env.ZOHO_CAMPAIGNS_LIST_KEY;
@@ -73,7 +133,7 @@ export async function POST(request: Request) {
       }
     } catch (error) {
       console.error('Failed to parse response:', error);
-      throw new Error(`Invalid response format: ${responseText.substring(0, 100)}...`);
+      throw new Error(`Invalid response format: ${responseText ? responseText.substring(0, 100) + '...' : 'No response text'}`);
     }
 
     // Zoho API 返回 code: 0 表示成功

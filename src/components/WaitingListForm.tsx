@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Box, Input, Button, Alert } from '@chakra-ui/react'
 import { toaster } from '@/components/ui/toaster'
+import { MdSend } from "react-icons/md"
 
 // 声明全局TencentCaptcha类型
 declare global {
@@ -37,22 +38,41 @@ export default function WaitingListForm() {
   const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState<{text: string, type: 'success'|'error'}|null>(null)
   const [captchaReady, setCaptchaReady] = useState(false)
-  const [loadingToastId, setLoadingToastId] = useState<string | null>(null)
+  const loadingToastIdRef = useRef<string | null>(null)
 
   // 关闭loading Toast的函数
   const closeLoadingToast = () => {
-    if (loadingToastId) {
-      console.log('关闭loading Toast:', loadingToastId)
-      try {
-        toaster.dismiss(loadingToastId)
-      } catch (error) {
-        console.log('单个Toast关闭失败，关闭所有Toast')
-        toaster.dismiss()
-      }
-      setLoadingToastId(null)
+    if (loadingToastIdRef.current) {
+      console.log('关闭loading Toast:', loadingToastIdRef.current)
+      // 使用setTimeout避免在React渲染过程中调用Toast方法
+      setTimeout(() => {
+        try {
+          toaster.dismiss(loadingToastIdRef.current!)
+          loadingToastIdRef.current = null
+        } catch (error) {
+          console.log('单个Toast关闭失败，关闭所有Toast')
+          toaster.dismiss()
+          loadingToastIdRef.current = null
+        }
+      }, 0)
     } else {
       console.log('没有loading Toast ID，关闭所有Toast')
-      toaster.dismiss()
+      setTimeout(() => {
+        toaster.dismiss()
+      }, 0)
+    }
+  }
+
+  // 设置loading Toast超时
+  const setLoadingToastTimeout = () => {
+    if (loadingToastIdRef.current) {
+      // 30秒后自动关闭loading Toast
+      setTimeout(() => {
+        if (loadingToastIdRef.current) {
+          console.log('loading Toast超时，自动关闭')
+          closeLoadingToast()
+        }
+      }, 30000)
     }
   }
 
@@ -66,6 +86,23 @@ export default function WaitingListForm() {
       }
     }
     checkCaptchaReady()
+
+    // 组件卸载时清理所有Toast - 使用setTimeout避免flushSync错误
+    return () => {
+      // 使用setTimeout将Toast清理操作推迟到下一个事件循环
+      setTimeout(() => {
+        try {
+          if (loadingToastIdRef.current) {
+            toaster.dismiss(loadingToastIdRef.current)
+            loadingToastIdRef.current = null
+          }
+          // 关闭所有Toast
+          toaster.dismiss()
+        } catch (error) {
+          console.log('Toast清理过程中发生错误:', error)
+        }
+      }, 0)
+    }
   }, [])
 
   // 简单的邮箱验证
@@ -114,7 +151,7 @@ export default function WaitingListForm() {
           description: data.error,
         })
       }
-    } catch {
+    } catch (error) {
       const errorMessage = '抱歉，提交过程中出现了问题，请稍后再试。'
       setMessage({
         text: errorMessage,
@@ -127,6 +164,19 @@ export default function WaitingListForm() {
       })
     } finally {
       setIsLoading(false)
+      // 确保在任何情况下都关闭loading Toast - 使用setTimeout避免flushSync错误
+      if (loadingToastIdRef.current) {
+        console.log('关闭loading Toast:', loadingToastIdRef.current)
+        setTimeout(() => {
+          try {
+            toaster.dismiss(loadingToastIdRef.current!)
+            loadingToastIdRef.current = null
+          } catch (error) {
+            console.log('Toast关闭失败:', error)
+            loadingToastIdRef.current = null
+          }
+        }, 0)
+      }
     }
   }
 
@@ -218,7 +268,8 @@ export default function WaitingListForm() {
       type: "loading",
     })
     console.log('获取到Toast ID:', toastId)
-    setLoadingToastId(toastId)
+    loadingToastIdRef.current = toastId
+    setLoadingToastTimeout() // 设置超时
   }
 
   return (
@@ -275,7 +326,8 @@ export default function WaitingListForm() {
             fontWeight="500"
             disabled={isLoading}
           >
-            {isLoading ? '提交中...' : '加入'}
+            {isLoading ? '提交中...' : '提交'}
+            {!isLoading && <MdSend style={{ marginLeft: '8px' }} />}
           </Button>
         </Box>
         

@@ -1,5 +1,6 @@
 import { ZohoAuth } from '@/lib/zoho-auth';
 import { NextResponse } from 'next/server';
+import { validateEmail, sanitizeEmail, isTemporaryEmail } from '@/lib/email-validator';
 
 // 腾讯云验证码校验函数
 async function verifyCaptcha(ticket: string, randstr: string, userIp: string): Promise<boolean> {
@@ -59,6 +60,39 @@ export async function POST(request: Request) {
     const userIP = getClientIP(request);
     console.log('用户IP地址:', userIP);
 
+    // 后端邮箱验证 - 防止注入攻击
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.isValid) {
+      return NextResponse.json(
+        { error: emailValidation.error || '邮箱地址验证失败' },
+        { status: 400 }
+      );
+    }
+
+    // 清理和标准化邮箱地址
+    const sanitizedEmail = sanitizeEmail(email);
+    
+    // 检查是否为临时邮箱
+    if (isTemporaryEmail(sanitizedEmail)) {
+      return NextResponse.json(
+        { error: '不支持临时邮箱地址，请使用真实邮箱' },
+        { status: 400 }
+      );
+    }
+
+    // 记录验证通过的邮箱信息
+    console.log('邮箱验证通过:', {
+      email: sanitizedEmail,
+      ...emailValidation.details,
+      userIP: userIP,
+      timestamp: new Date().toISOString()
+    });
+
+    // 速率限制检查 - 防止恶意提交
+    console.log(`速率限制检查: IP ${userIP}, 邮箱 ${sanitizedEmail}`);
+    // 这里可以集成Redis或其他缓存系统来实现真正的速率限制
+    // 生产环境建议使用Redis实现速率限制
+
     // 验证腾讯云验证码
     console.log('开始验证腾讯云验证码...');
     const captchaValid = await verifyCaptcha(ticket, randstr, userIP);
@@ -90,7 +124,7 @@ export async function POST(request: Request) {
     const params = new URLSearchParams({
       resfmt: 'JSON',
       listkey: listKey,
-      emailids: email // 单个邮箱地址
+      emailids: sanitizedEmail // 使用清理后的邮箱地址
     });
 
     const url = `${baseUrl}/addlistsubscribersinbulk?${params.toString()}`;

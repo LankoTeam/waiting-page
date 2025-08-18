@@ -73,7 +73,7 @@ export async function POST(request: Request) {
       }
     } catch (error) {
       console.error('Failed to parse response:', error);
-      throw new Error(`Invalid response format: ${responseText.substring(0, 100)}...`);
+      throw new Error(`Invalid response format: ${responseText ? responseText.substring(0, 100) + '...' : 'No response text'}`);
     }
 
     // Zoho API 返回 code: 0 表示成功

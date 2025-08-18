@@ -12,6 +12,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "LANKO蓝扣 - 即将上线",
   description: "LANKO蓝扣项目即将上线，加入我们的Waiting List获取最新消息",
+  icons: {
+    icon: '/lanko-main-logo-320x320.ico',
+    shortcut: '/lanko-main-logo-320x320.ico',
+    apple: '/lanko-main-logo-320x320.ico',
+  },
 };
 
 export default function RootLayout({

@@ -12,37 +12,68 @@ export async function POST(request: Request) {
       );
     }
 
+    // 检查必要的环境变量
+    const listKey = process.env.ZOHO_CAMPAIGNS_LIST_KEY;
+    const baseUrl = process.env.ZOHO_CAMPAIGNS_BASE_URL;
+
+    console.log('Checking Zoho Campaigns configuration:');
+    console.log('ZOHO_CAMPAIGNS_LIST_KEY exists:', !!listKey);
+    console.log('ZOHO_CAMPAIGNS_BASE_URL exists:', !!baseUrl);
+
+    if (!listKey || !baseUrl) {
+      throw new Error('Missing required Zoho Campaigns configuration');
+    }
+
     const headers = await ZohoAuth.getHeaders();
     
+    // 构建请求体
+    const requestBody = {
+      listkey: listKey,
+      contactinfo: {
+        Contact_Email: email,
+        Contact_Source: 'LANKO Waiting List',
+        First_Name: email.split('@')[0],
+      },
+      resfmt: 'JSON',
+    };
+
+    console.log('Sending request to Zoho Campaigns:', {
+      url: `${baseUrl}/json/listsubscribe`,
+      body: requestBody
+    });
+
     // 构建 Zoho Campaigns API 请求
     const response = await fetch(
-      `${process.env.ZOHO_CAMPAIGNS_BASE_URL}/json/listsubscribe`,
+      `${baseUrl}/json/listsubscribe`,
       {
         method: 'POST',
         headers,
-        body: JSON.stringify({
-          listkey: process.env.ZOHO_CAMPAIGNS_LIST_KEY,
-          contactinfo: {
-            Contact_Email: email,
-            Contact_Source: 'LANKO Waiting List',
-            First_Name: email.split('@')[0], // 使用邮箱前缀作为名字
-          },
-          resfmt: 'JSON',
-        }),
+        body: JSON.stringify(requestBody),
       }
     );
 
+    console.log('Zoho Campaigns response status:', response.status);
+    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
     // 检查响应的 Content-Type
     const contentType = response.headers.get('content-type');
+    console.log('Response content type:', contentType);
+
     let data;
+    let responseText;
     
-    if (contentType?.includes('application/json')) {
-      data = await response.json();
-    } else {
-      // 如果不是 JSON 响应，获取文本内容用于错误信息
-      const text = await response.text();
-      console.error('Unexpected response format:', text);
-      throw new Error('API returned non-JSON response');
+    try {
+      responseText = await response.text();
+      console.log('Raw response:', responseText);
+      
+      if (responseText.trim().startsWith('{')) {
+        data = JSON.parse(responseText);
+      } else {
+        throw new Error('Response is not JSON');
+      }
+    } catch (error) {
+      console.error('Failed to parse response:', error);
+      throw new Error(`Invalid response format: ${responseText.substring(0, 100)}...`);
     }
 
     // Zoho API 返回 code: 0 表示成功

@@ -1,6 +1,6 @@
 'use client'
 
-import Image from "next/image";
+import Logo from "@/components/Logo";
 import WaitingListForm from "@/components/WaitingListForm";
 import ThemeToggle from "@/components/ThemeToggle";
 import { Box, Stack, Container, Heading, Text } from '@chakra-ui/react';
@@ -23,13 +23,7 @@ export default function Home() {
           <Stack gap={10} align="center" width="100%">
             {/* Logo */}
             <Box mb={4}>
-              <Image
-                src="/lanko-main-logo-320x320.svg"
-                alt="LANKO蓝扣 Logo"
-                width={200}
-                height={200}
-                priority
-              />
+              <Logo />
             </Box>
 
             {/* 标题和描述 */}

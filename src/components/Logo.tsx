@@ -2,8 +2,8 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import Image from 'next/image'
-import { Box, Button, Dialog, Portal, HStack } from '@chakra-ui/react'
-import { InfoIcon } from '@chakra-ui/icons'
+import { Box, Button, Dialog, Portal, HStack, Icon } from '@chakra-ui/react'
+import { MdInfo } from 'react-icons/md'
 
 export default function Logo() {
   const [clickCount, setClickCount] = useState(0)
@@ -178,7 +178,9 @@ export default function Logo() {
             <Dialog.Content>
               <Dialog.Header>
                 <HStack>
-                  <InfoIcon color="blue.400" boxSize={6} />
+                  <Icon size="lg" color="blue.400">
+                    <MdInfo />
+                  </Icon>
                   <Dialog.Title>发现彩蛋！</Dialog.Title>
                 </HStack>
               </Dialog.Header>

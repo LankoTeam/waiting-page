@@ -1,68 +1,75 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import styles from './ThemeToggle.module.css'
+import { useState, useEffect } from 'react'
+import { Button, Box } from '@chakra-ui/react'
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState('light')
+  const [isDark, setIsDark] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
-  // 检测系统偏好
+  // 检测系统偏好和加载保存的设置
   useEffect(() => {
-    if (
-      typeof window !== 'undefined' && 
-      window.matchMedia && 
-      window.matchMedia('(prefers-color-scheme: dark)').matches
-    ) {
-      setTheme('dark')
-    }
-
-    // 加载保存的主题设置
-    const savedTheme = localStorage.getItem('theme')
-    if (savedTheme) {
-      setTheme(savedTheme)
+    setMounted(true)
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme')
+      if (savedTheme) {
+        setIsDark(savedTheme === 'dark')
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        setIsDark(true)
+      }
     }
   }, [])
 
-  // 主题改变时更新document属性和localStorage
+  // 主题改变时更新文档属性和保存设置
   useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.setAttribute('data-theme', 'dark')
-    } else {
-      document.documentElement.removeAttribute('data-theme')
+    if (!mounted) return
+    
+    if (typeof window !== 'undefined') {
+      if (isDark) {
+        document.documentElement.classList.add('dark')
+        document.documentElement.setAttribute('data-theme', 'dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+        document.documentElement.removeAttribute('data-theme')
+      }
+      localStorage.setItem('theme', isDark ? 'dark' : 'light')
     }
-    localStorage.setItem('theme', theme)
-  }, [theme])
+  }, [isDark, mounted])
 
-  // 切换主题
   const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light')
+    setIsDark(!isDark)
+  }
+
+  // 避免 SSR 水合不匹配
+  if (!mounted) {
+    return null
   }
 
   return (
-    <button 
-      onClick={toggleTheme} 
-      className={styles.themeToggle}
-      aria-label={theme === 'light' ? '切换到暗色模式' : '切换到亮色模式'}
+    <Button
+      aria-label={isDark ? '切换到亮色模式' : '切换到暗色模式'}
+      onClick={toggleTheme}
+      variant="ghost"
+      size="md"
+      position="fixed"
+      top={4}
+      right={4}
+      zIndex={1000}
+      bg={isDark ? 'gray.700' : 'white'}
+      color={isDark ? 'gray.300' : 'gray.600'}
+      _hover={{
+        bg: isDark ? 'gray.600' : 'gray.100',
+        color: isDark ? 'white' : 'gray.800',
+      }}
+      borderRadius="full"
+      boxShadow="md"
+      width="40px"
+      height="40px"
+      minWidth="40px"
     >
-      {theme === 'light' ? (
-        // 月亮图标 - 暗黑模式
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-      ) : (
-        // 太阳图标 - 亮色模式
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="5"></circle>
-          <line x1="12" y1="1" x2="12" y2="3"></line>
-          <line x1="12" y1="21" x2="12" y2="23"></line>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-          <line x1="1" y1="12" x2="3" y2="12"></line>
-          <line x1="21" y1="12" x2="23" y2="12"></line>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-        </svg>
-      )}
-    </button>
+      <Box fontSize="20px">
+        {isDark ? '☀️' : '🌙'}
+      </Box>
+    </Button>
   )
 }

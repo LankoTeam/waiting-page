@@ -1,66 +1,32 @@
 'use client'
 
-import { createContext, useState, useContext, useEffect } from 'react'
+import { ChakraProvider, createSystem, defaultConfig } from '@chakra-ui/react'
 
-type ThemeContextType = {
-  theme: string;
-  setTheme: (theme: string) => void;
-}
-
-// 创建主题上下文
-const ThemeContext = createContext<ThemeContextType>({
-  theme: 'light',
-  setTheme: () => {}
+const system = createSystem(defaultConfig, {
+  theme: {
+    tokens: {
+      colors: {
+        brand: {
+          50: { value: '#e3f2fd' },
+          100: { value: '#bbdefb' },
+          200: { value: '#90caf9' },
+          300: { value: '#64b5f6' },
+          400: { value: '#42a5f5' },
+          500: { value: '#2196f3' },
+          600: { value: '#1e88e5' },
+          700: { value: '#1976d2' },
+          800: { value: '#1565c0' },
+          900: { value: '#0d47a1' },
+        },
+      },
+    },
+  },
 })
 
-// 使用主题的hook
-export const useTheme = () => useContext(ThemeContext)
-
-// 提供者组件
 export function Providers({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState('light')
-  const [mounted, setMounted] = useState(false)
-  
-  useEffect(() => {
-    // 检测系统偏好
-    if (
-      typeof window !== 'undefined' && 
-      window.matchMedia && 
-      window.matchMedia('(prefers-color-scheme: dark)').matches
-    ) {
-      setTheme('dark')
-    }
-    
-    // 加载保存的主题设置
-    const savedTheme = localStorage?.getItem('theme')
-    if (savedTheme) {
-      setTheme(savedTheme)
-    }
-    
-    setMounted(true)
-  }, [])
-
-  // 主题改变时更新document属性
-  useEffect(() => {
-    if (!mounted) return
-    
-    if (theme === 'dark') {
-      document.documentElement.setAttribute('data-theme', 'dark')
-    } else {
-      document.documentElement.removeAttribute('data-theme')
-    }
-    
-    localStorage?.setItem('theme', theme)
-  }, [theme, mounted])
-
-  // 避免SSR与客户端水合不匹配
-  if (!mounted) {
-    return <>{children}</>
-  }
-
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
+    <ChakraProvider value={system}>
       {children}
-    </ThemeContext.Provider>
+    </ChakraProvider>
   )
 }

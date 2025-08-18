@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import styles from '@/components/WaitingListForm.module.css'
+import { Box, Input, Button } from '@chakra-ui/react'
 
 export default function WaitingListForm() {
   const [email, setEmail] = useState('')
@@ -49,40 +49,83 @@ export default function WaitingListForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
-      <div className={styles.inputContainer}>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value)
-            if (isError) setIsError(false)
-            if (message) setMessage(null)
-          }}
-          placeholder="请输入您的电子邮箱"
-          required
-          className={`${styles.input} ${isError ? styles.inputError : ''}`}
-        />
-        <button 
-          type="submit" 
-          disabled={isLoading}
-          className={styles.button}
-        >
-          {isLoading ? '提交中...' : '加入'}
-        </button>
-      </div>
-      
-      {isError && (
-        <div className={styles.errorMessage}>
-          请输入有效的电子邮箱地址
-        </div>
-      )}
+    <Box
+      as="form"
+      onSubmit={handleSubmit}
+      width="100%"
+      maxWidth="500px"
+      mx="auto"
+    >
+      <Box position="relative" mb={4}>
+        <Box display="flex" height="54px" shadow="sm" borderRadius="6px">
+          <Input
+            type="email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value)
+              if (isError) setIsError(false)
+              if (message) setMessage(null)
+            }}
+            placeholder="请输入您的电子邮箱"
+            bg="var(--card-background)"
+            borderColor={isError ? 'var(--error-text)' : 'var(--border-color)'}
+            _hover={{
+              borderColor: isError ? 'var(--error-text)' : 'var(--hover-border)',
+            }}
+            _focus={{
+              borderColor: 'var(--brand-primary)',
+              boxShadow: '0 0 0 1px var(--brand-primary)',
+              outline: 'none'
+            }}
+            color="var(--foreground)"
+            _placeholder={{ color: 'var(--text-muted)' }}
+            fontSize="md"
+            height="54px"
+            pr="120px"
+            borderRadius="6px"
+          />
+          <Button
+            type="submit"
+            loading={isLoading}
+            position="absolute"
+            top="7px"
+            right="7px"
+            bottom="7px"
+            bg="var(--brand-primary)"
+            color="white"
+            _hover={{ bg: "var(--brand-secondary)" }}
+            _active={{ bg: "var(--brand-secondary)" }}
+            _disabled={{ bg: "var(--text-muted)", cursor: "not-allowed" }}
+            borderRadius="6px"
+            px="30px"
+            fontSize="md"
+            fontWeight="500"
+            disabled={isLoading}
+          >
+            {isLoading ? '提交中...' : '加入'}
+          </Button>
+        </Box>
+        
+        {isError && (
+          <Box color="var(--error-text)" fontSize="sm" mt={1}>
+            请输入有效的电子邮箱地址
+          </Box>
+        )}
+      </Box>
       
       {message && (
-        <div className={`${styles.message} ${message.type === 'success' ? styles.successMessage : styles.errorMessageBox}`}>
+        <Box 
+          p={3}
+          borderRadius="md"
+          mt={3}
+          bg={message.type === 'success' ? 'var(--success-bg)' : 'var(--error-bg)'}
+          borderColor={message.type === 'success' ? 'var(--success-text)' : 'var(--error-text)'}
+          borderWidth="1px"
+          color={message.type === 'success' ? 'var(--success-text)' : 'var(--error-text)'}
+        >
           {message.text}
-        </div>
+        </Box>
       )}
-    </form>
+    </Box>
   )
 }

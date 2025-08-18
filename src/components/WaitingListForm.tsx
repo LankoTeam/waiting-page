@@ -25,20 +25,30 @@ export default function WaitingListForm() {
     setIsError(false)
     setMessage(null)
     
-    // 模拟API调用
     try {
-      // 这里将来可以替换为真实的API调用
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // 成功提交
-      setMessage({
-        text: '感谢您的订阅，我们会在LANKO蓝扣上线时通知您。',
-        type: 'success'
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
       })
-      
-      setEmail('')
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setMessage({
+          text: data.message,
+          type: 'success'
+        })
+        setEmail('')
+      } else {
+        setMessage({
+          text: data.error,
+          type: 'error'
+        })
+      }
     } catch (error) {
-      // 提交失败
       setMessage({
         text: '抱歉，提交过程中出现了问题，请稍后再试。',
         type: 'error'

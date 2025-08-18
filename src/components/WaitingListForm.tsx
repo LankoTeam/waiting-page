@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Box, Input, Button, Alert } from '@chakra-ui/react'
+import { toaster } from '@/components/ui/toaster'
 
 // 声明全局TencentCaptcha类型
 declare global {
@@ -36,6 +37,24 @@ export default function WaitingListForm() {
   const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState<{text: string, type: 'success'|'error'}|null>(null)
   const [captchaReady, setCaptchaReady] = useState(false)
+  const [loadingToastId, setLoadingToastId] = useState<string | null>(null)
+
+  // 关闭loading Toast的函数
+  const closeLoadingToast = () => {
+    if (loadingToastId) {
+      console.log('关闭loading Toast:', loadingToastId)
+      try {
+        toaster.dismiss(loadingToastId)
+      } catch (error) {
+        console.log('单个Toast关闭失败，关闭所有Toast')
+        toaster.dismiss()
+      }
+      setLoadingToastId(null)
+    } else {
+      console.log('没有loading Toast ID，关闭所有Toast')
+      toaster.dismiss()
+    }
+  }
 
   // 检查腾讯云验证码SDK是否加载完成
   useEffect(() => {
@@ -79,16 +98,32 @@ export default function WaitingListForm() {
           type: 'success'
         })
         setEmail('')
+        // 显示成功Toast
+        toaster.success({
+          title: "订阅成功",
+          description: data.message,
+        })
       } else {
         setMessage({
           text: data.error,
           type: 'error'
         })
+        // 显示错误Toast
+        toaster.error({
+          title: "订阅失败",
+          description: data.error,
+        })
       }
     } catch {
+      const errorMessage = '抱歉，提交过程中出现了问题，请稍后再试。'
       setMessage({
-        text: '抱歉，提交过程中出现了问题，请稍后再试。',
+        text: errorMessage,
         type: 'error'
+      })
+      // 显示错误Toast
+      toaster.error({
+        title: "请求失败",
+        description: errorMessage,
       })
     } finally {
       setIsLoading(false)
@@ -136,15 +171,36 @@ export default function WaitingListForm() {
       document.body, // 挂载元素
       "189934257", // 您的CaptchaAppId
       function(res: TencentCaptchaResponse) {
+        console.log('验证码回调结果:', res)
         if (res.ret === 0) {
           // 验证成功，获取票据
           const { ticket, randstr } = res
+          console.log('验证码验证成功，准备关闭loading Toast')
+          
+          // 先关闭loading Toast
+          closeLoadingToast()
+          
+          // 显示验证码通过Toast
+          toaster.success({
+            title: "验证码已通过",
+            description: "正在进行安全验证...",
+          })
           submitWithCaptcha(ticket, randstr)
         } else {
           // 验证失败或用户取消
+          console.log('验证码验证失败，准备关闭loading Toast')
+          
+          // 先关闭loading Toast
+          closeLoadingToast()
+          
           setMessage({
             text: '验证码验证失败，请重试。',
             type: 'error'
+          })
+          // 显示验证失败Toast
+          toaster.error({
+            title: "验证失败",
+            description: "验证码验证失败，请重试。",
           })
         }
       },
@@ -153,6 +209,16 @@ export default function WaitingListForm() {
 
     // 显示验证码
     captcha.show()
+    
+    // 显示正在进行安全验证Toast
+    console.log('显示loading Toast')
+    const toastId = toaster.create({
+      title: "安全验证",
+      description: "正在进行安全验证...",
+      type: "loading",
+    })
+    console.log('获取到Toast ID:', toastId)
+    setLoadingToastId(toastId)
   }
 
   return (

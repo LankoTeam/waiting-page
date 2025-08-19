@@ -1,15 +1,6 @@
 "use client"
 
-import { createContext, useContext } from "react"
 import { ThemeProvider, useTheme } from "next-themes"
-
-type ColorModeContextType = {
-  colorMode: string | undefined
-  setColorMode: (colorMode: string) => void
-  toggleColorMode: () => void
-}
-
-const ColorModeContext = createContext<ColorModeContextType | undefined>(undefined)
 
 export function ColorModeProvider(props: React.PropsWithChildren) {
   return (

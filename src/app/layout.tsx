@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Toaster } from "@/components/ui/toaster";
+import { ThemeScript } from "@/components/ui/theme-script";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -34,21 +35,9 @@ export default function RootLayout({
           src="https://ca.turing.captcha.qcloud.com/TJNCaptcha-global.js" 
           async
         ></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                  document.documentElement.classList.add('dark')
-                } else {
-                  document.documentElement.classList.remove('dark')
-                }
-              } catch (_) {}
-            `,
-          }}
-        />
       </head>
       <body className={`${inter.variable} antialiased`}>
+        <ThemeScript />
         <Providers>
           {children}
           <Toaster />

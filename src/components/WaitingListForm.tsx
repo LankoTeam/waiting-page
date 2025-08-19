@@ -32,7 +32,11 @@ interface TencentCaptchaInstance {
   destroy: () => void;
 }
 
-export default function WaitingListForm() {
+interface WaitingListFormProps {
+  captchaReady?: boolean;
+}
+
+export default function WaitingListForm({ captchaReady: externalCaptchaReady }: WaitingListFormProps) {
   const [email, setEmail] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isError, setIsError] = useState(false)
@@ -78,6 +82,14 @@ export default function WaitingListForm() {
 
   // 检查腾讯云验证码SDK是否加载完成
   useEffect(() => {
+    // 如果外部传入了预加载的验证码实例，直接使用
+    if (externalCaptchaReady) {
+      console.log('使用预加载的验证码实例')
+      setCaptchaReady(true)
+      return
+    }
+
+    // 否则使用原有的检查逻辑
     const checkCaptchaReady = () => {
       if (typeof window !== 'undefined' && window.TencentCaptcha) {
         setCaptchaReady(true)
@@ -103,7 +115,7 @@ export default function WaitingListForm() {
         }
       }, 0)
     }
-  }, [])
+  }, [externalCaptchaReady])
 
   // 简单的邮箱验证
   const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -208,7 +220,7 @@ export default function WaitingListForm() {
     }
 
     // 检查验证码SDK是否准备就绪
-    if (!captchaReady || !window.TencentCaptcha) {
+    if (!captchaReady || (!window.TencentCaptcha)) {
       setMessage({
         text: '验证码组件正在加载中，请稍后再试。',
         type: 'error'
@@ -216,7 +228,7 @@ export default function WaitingListForm() {
       return
     }
     
-    // 初始化腾讯云验证码（快速接入方式）
+    // 否则使用原有的初始化逻辑
     const captcha = new window.TencentCaptcha(
       document.body, // 挂载元素
       "189934257", // 您的CaptchaAppId

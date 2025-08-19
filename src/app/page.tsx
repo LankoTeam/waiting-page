@@ -1,11 +1,21 @@
 'use client'
 
+import { useState, useCallback } from 'react'
 import Logo from "@/components/Logo";
 import WaitingListForm from "@/components/WaitingListForm";
 import ThemeToggle from "@/components/ThemeToggle";
+import CaptchaPreloader from "@/components/CaptchaPreloader";
 import { Box, Stack, Container, Heading, Text } from '@chakra-ui/react';
 
 export default function Home() {
+  const [captchaReady, setCaptchaReady] = useState(false)
+
+  // 验证码SDK准备就绪的回调函数
+  const handleCaptchaReady = useCallback(() => {
+    console.log('TCaptcha SDK已预加载完成')
+    setCaptchaReady(true)
+  }, [])
+
   return (
     <Box
       minHeight="100vh"
@@ -16,6 +26,11 @@ export default function Home() {
         background: 'linear-gradient(to bottom, var(--gradient-start), var(--gradient-end))'
       }}
     >
+      {/* 验证码SDK预加载组件 */}
+      <CaptchaPreloader 
+        onCaptchaReady={handleCaptchaReady}
+      />
+      
       <ThemeToggle />
       
       <Box as="main" flex="1" display="flex" flexDirection="column" justifyContent="center" py={8} px={4}>
@@ -62,7 +77,9 @@ export default function Home() {
 
             {/* 邮件订阅表单 */}
             <Box width="100%" maxW="36rem" px={4}>
-              <WaitingListForm />
+              <WaitingListForm 
+                captchaReady={captchaReady}
+              />
             </Box>
           </Stack>
         </Container>

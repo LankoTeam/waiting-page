@@ -39,6 +39,11 @@ export function validateEmail(email: string): EmailValidationResult {
       return { isValid: false, error: '邮箱地址格式无效' };
     }
 
+    // 3.1 检查是否包含非ASCII字符（包括中文句号等）
+    if (!/^[\x00-\x7F]+$/.test(emailStr)) {
+      return { isValid: false, error: '邮箱地址不能包含中文句号等非ASCII字符' };
+    }
+
     // 4. 特殊字符过滤 - 防止XSS和注入攻击
     const dangerousChars = /[<>\"'&]/;
     if (dangerousChars.test(emailStr)) {

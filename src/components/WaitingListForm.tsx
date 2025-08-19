@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Box, Input, Button, Stack, Alert } from '@chakra-ui/react'
 import { toaster } from '@/components/ui/toaster'
 import { MdSend } from "react-icons/md"
+import { validateEmail } from '@/lib/email-validator'
 
 // 声明全局TencentCaptcha类型
 declare global {
@@ -117,8 +118,11 @@ export default function WaitingListForm({ captchaReady: externalCaptchaReady }: 
     }
   }, [externalCaptchaReady])
 
-  // 简单的邮箱验证
-  const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  // 使用严格的邮箱验证
+  const isValidEmail = (email: string) => {
+    const result = validateEmail(email);
+    return result.isValid;
+  }
 
   // 提交表单到后端，包含验证码票据
   const submitWithCaptcha = async (ticket: string, randstr: string) => {
@@ -210,10 +214,11 @@ export default function WaitingListForm({ captchaReady: externalCaptchaReady }: 
     }
     
     // 验证邮箱格式
-    if (!isValidEmail(email)) {
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.isValid) {
       setIsError(true)
       setMessage({
-        text: '请输入有效的电子邮箱地址',
+        text: emailValidation.error || '请输入有效的电子邮箱地址',
         type: 'error'
       })
       return

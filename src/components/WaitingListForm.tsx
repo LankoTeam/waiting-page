@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Box, Input, Button, Alert } from '@chakra-ui/react'
+import { Box, Input, Button, Alert, Stack } from '@chakra-ui/react'
 import { toaster } from '@/components/ui/toaster'
 import { MdSend } from "react-icons/md"
 
@@ -277,74 +277,73 @@ export default function WaitingListForm() {
       as="form"
       onSubmit={handleSubmit}
       width="100%"
-      maxWidth="500px"
+      maxWidth={{ base: "100%", sm: "400px", md: "500px" }}
       mx="auto"
+      px={{ base: 1, sm: 0 }}
     >
-      <Box position="relative" mb={4}>
-        <Box display="flex" height="54px" shadow="sm" borderRadius="6px">
-          <Input
-            type="email"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value)
-              if (isError) setIsError(false)
-              if (message) setMessage(null)
-            }}
-            placeholder="请输入您的电子邮箱"
-            bg="var(--card-background)"
-            borderColor={isError ? 'var(--error-text)' : 'var(--border-color)'}
-            _hover={{
-              borderColor: isError ? 'var(--error-text)' : 'var(--hover-border)',
-            }}
-            _focus={{
-              borderColor: 'var(--brand-primary)',
-              boxShadow: '0 0 0 1px var(--brand-primary)',
-              outline: 'none'
-            }}
-            color="var(--foreground)"
-            _placeholder={{ color: 'var(--text-muted)' }}
-            fontSize="md"
-            height="54px"
-            pr="120px"
-            borderRadius="6px"
-          />
-          <Button
-            type="submit"
-            loading={isLoading}
-            position="absolute"
-            top="7px"
-            right="7px"
-            bottom="7px"
-            bg="var(--brand-primary)"
-            color="white"
-            _hover={{ bg: "var(--brand-secondary)" }}
-            _active={{ bg: "var(--brand-secondary)" }}
-            _disabled={{ bg: "var(--text-muted)", cursor: "not-allowed" }}
-            borderRadius="6px"
-            px="30px"
-            fontSize="md"
-            fontWeight="500"
-            disabled={isLoading}
-          >
-            {isLoading ? '提交中...' : '提交'}
-            {!isLoading && <MdSend style={{ marginLeft: '8px' }} />}
-          </Button>
-        </Box>
+      <Stack gap={4}>
+        <Input
+          type="email"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value)
+            if (isError) setIsError(false)
+            if (message) setMessage(null)
+          }}
+          placeholder="请输入您的电子邮箱"
+          bg="var(--card-background)"
+          borderColor={isError ? 'var(--error-text)' : 'var(--border-color)'}
+          _hover={{
+            borderColor: isError ? 'var(--error-text)' : 'var(--hover-border)',
+          }}
+          _focus={{
+            borderColor: 'var(--brand-primary)',
+            boxShadow: '0 0 0 1px var(--brand-primary)',
+            outline: 'none'
+          }}
+          color="var(--foreground)"
+          _placeholder={{ color: 'var(--text-muted)' }}
+          fontSize={{ base: "sm", md: "md" }}
+          height={{ base: "48px", md: "54px" }}
+          borderRadius="6px"
+        />
         
-        {/* 只显示一个Alert，优先显示message，如果没有message则显示isError */}
-        {(message || isError) && (
-          <Alert.Root 
-            status={message?.type || "error"}
-            mt={3}
-            borderRadius="md"
-          >
-            <Alert.Indicator />
-            <Alert.Title fontSize="sm">
-              {message?.text || "请输入有效的电子邮箱地址"}
-            </Alert.Title>
-          </Alert.Root>
-        )}
-      </Box>
+        <Button
+          type="submit"
+          loading={isLoading}
+          bg="var(--brand-primary)"
+          color="white"
+          _hover={{ bg: "var(--brand-secondary)" }}
+          _active={{ bg: "var(--brand-secondary)" }}
+          _disabled={{ bg: "var(--text-muted)", cursor: "not-allowed" }}
+          borderRadius="6px"
+          px={{ base: "20px", sm: "24px", md: "28px" }}
+          py={{ base: "8px", sm: "10px", md: "12px" }}
+          fontSize={{ base: "xs", sm: "sm", md: "md" }}
+          fontWeight="500"
+          disabled={isLoading}
+          width="auto"
+          height={{ base: "36px", md: "40px" }}
+          alignSelf="center"
+        >
+          {isLoading ? '提交中...' : '提交'}
+          {!isLoading && <MdSend style={{ marginLeft: '8px' }} />}
+        </Button>
+      </Stack>
+      
+      {/* 只显示一个Alert，优先显示message，如果没有message则显示isError */}
+      {(message || isError) && (
+        <Alert.Root 
+          status={message?.type || "error"}
+          mt={3}
+          borderRadius="md"
+        >
+          <Alert.Indicator />
+          <Alert.Title fontSize="sm">
+            {message?.text || "请输入有效的电子邮箱地址"}
+          </Alert.Title>
+        </Alert.Root>
+      )}
     </Box>
   )
 }

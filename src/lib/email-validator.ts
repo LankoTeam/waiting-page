@@ -23,32 +23,37 @@ export function validateEmail(email: string): EmailValidationResult {
   try {
     // 1. 基础检查
     if (!email || typeof email !== 'string') {
-      return { isValid: false, error: '邮箱地址不能为空' };
+      return { isValid: false, error: 'Email address cannot be empty' };
     }
 
     const emailStr = email.trim();
     
     // 2. 长度验证
     if (emailStr.length < 5 || emailStr.length > 254) {
-      return { isValid: false, error: '邮箱地址长度无效' };
+      return { isValid: false, error: 'Email address length is invalid' };
     }
 
     // 3. 格式验证 - 使用RFC 5322标准
     const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
     if (!emailRegex.test(emailStr)) {
-      return { isValid: false, error: '邮箱地址格式无效' };
+      return { isValid: false, error: 'Email address format is invalid' };
+    }
+
+    // 3.1 检查是否包含非ASCII字符（包括中文句号等）
+    if (!/^[\x00-\x7F]+$/.test(emailStr)) {
+      return { isValid: false, error: 'Email address cannot contain non-ASCII characters like Chinese periods' };
     }
 
     // 4. 特殊字符过滤 - 防止XSS和注入攻击
     const dangerousChars = /[<>\"'&]/;
     if (dangerousChars.test(emailStr)) {
-      return { isValid: false, error: '邮箱地址包含无效字符' };
+      return { isValid: false, error: 'Email address contains invalid characters' };
     }
 
     // 5. 分割邮箱地址
     const parts = emailStr.split('@');
     if (parts.length !== 2) {
-      return { isValid: false, error: '邮箱地址格式无效' };
+      return { isValid: false, error: 'Email address format is invalid' };
     }
 
     const localPart = parts[0];
@@ -56,11 +61,11 @@ export function validateEmail(email: string): EmailValidationResult {
 
     // 6. 本地部分验证
     if (localPart.length > 64) {
-      return { isValid: false, error: '邮箱用户名部分过长' };
+      return { isValid: false, error: 'Email username part is too long' };
     }
 
     if (localPart.startsWith('.') || localPart.endsWith('.')) {
-      return { isValid: false, error: '邮箱用户名不能以点号开头或结尾' };
+      return { isValid: false, error: 'Email username cannot start or end with a dot' };
     }
 
     // 7. 域名部分验证

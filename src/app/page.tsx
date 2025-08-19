@@ -1,13 +1,17 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import Logo from "@/components/Logo";
 import WaitingListForm from "@/components/WaitingListForm";
 import ThemeToggle from "@/components/ThemeToggle";
 import CaptchaPreloader from "@/components/CaptchaPreloader";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { Box, Stack, Container, Heading, Text } from '@chakra-ui/react';
+import '@/i18n/client' // 在客户端初始化i18next
 
 export default function Home() {
+  const { t } = useTranslation()
   const [captchaReady, setCaptchaReady] = useState(false)
 
   // 验证码SDK准备就绪的回调函数
@@ -31,7 +35,9 @@ export default function Home() {
         onCaptchaReady={handleCaptchaReady}
       />
       
-      <ThemeToggle />
+      <Box position="absolute" top={4} right={4}>
+        <ThemeToggle />
+      </Box>
       
       <Box as="main" flex="1" display="flex" flexDirection="column" justifyContent="center" py={8} px={4}>
         <Container maxW="4xl" centerContent>
@@ -63,7 +69,7 @@ export default function Home() {
                 color="var(--text-secondary)"
                 mb={4}
               >
-                即将上线
+                {t('waitingList.subtitle')}
               </Heading>
               <Text
                 fontSize="lg"
@@ -71,7 +77,7 @@ export default function Home() {
                 maxW="700px"
                 lineHeight="tall"
               >
-                专为国人设计的全新MeetUp活动平台
+                {t('waitingList.description')}
               </Text>
             </Stack>
 
@@ -85,22 +91,34 @@ export default function Home() {
         </Container>
       </Box>
 
-      {/* 页脚 */}
+            {/* 页脚 */}
       <Box
         as="footer"
         py={6}
         px={4}
-        textAlign="center"
         borderTop="1px solid"
         borderColor="var(--footer-border)"
       >
         <Container maxW="4xl">
-          <Text
-            color="var(--text-muted)"
-            fontSize="sm"
+          <Box 
+            display="flex" 
+            justifyContent="space-between" 
+            alignItems="center"
+            flexDirection={{ base: "column", sm: "row" }}
+            gap={{ base: 3, sm: 0 }}
           >
-            © {new Date().getFullYear()} LANKO All rights reserved.
-          </Text>
+            {/* 左侧版权信息 */}
+            <Text
+              color="var(--text-muted)"
+              fontSize="sm"
+              textAlign={{ base: "center", sm: "left" }}
+            >
+              {t('footer.copyright')}
+            </Text>
+            
+            {/* 右侧语言切换 */}
+            <LanguageSwitcher />
+          </Box>
         </Container>
       </Box>
     </Box>

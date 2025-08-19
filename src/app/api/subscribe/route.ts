@@ -99,7 +99,7 @@ export async function POST(request: Request) {
     
     if (!captchaValid) {
       return NextResponse.json(
-        { error: '验证码验证失败，请重新尝试' },
+        { error: 'captcha_failed', errorKey: 'waitingList.captchaFailed' },
         { status: 400 }
       );
     }
@@ -173,23 +173,24 @@ export async function POST(request: Request) {
     // Zoho API 返回 code: 0 表示成功
     if (data.status === 'success' || data.code === 0) {
       return NextResponse.json({
-        message: '感谢您的订阅，我们会在LANKO上线时通知您。',
+        message: 'success',
+        messageKey: 'waitingList.successMessage'
       });
     } else {
       // 处理已存在的订阅者
       if (data.message?.includes('already exists')) {
         return NextResponse.json(
-          { error: '该邮箱地址已经在等候列表中了。' },
+          { error: 'already_exists', errorKey: 'waitingList.alreadySubscribed' },
           { status: 400 }
         );
       }
       
-      throw new Error(data.message || '订阅失败');
+      throw new Error(data.message || 'subscription_failed');
     }
   } catch (error) {
     console.error('Zoho Campaigns API error:', error);
     return NextResponse.json(
-      { error: '抱歉，提交过程中出现了问题，请稍后再试。' },
+      { error: 'request_failed', errorKey: 'waitingList.requestFailed' },
       { status: 500 }
     );
   }

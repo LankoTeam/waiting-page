@@ -1,9 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Box, Input, Button, Stack, Alert } from '@chakra-ui/react'
 import { toaster } from '@/components/ui/toaster'
 import { MdSend } from "react-icons/md"
+import { validateEmail } from '@/lib/email-validator'
+import '@/i18n/client' // 在客户端初始化i18next
 
 // 声明全局TencentCaptcha类型
 declare global {
@@ -37,6 +40,7 @@ interface WaitingListFormProps {
 }
 
 export default function WaitingListForm({ captchaReady: externalCaptchaReady }: WaitingListFormProps) {
+  const { t } = useTranslation()
   const [email, setEmail] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isError, setIsError] = useState(false)
@@ -117,8 +121,11 @@ export default function WaitingListForm({ captchaReady: externalCaptchaReady }: 
     }
   }, [externalCaptchaReady])
 
-  // 简单的邮箱验证
-  const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  // 使用严格的邮箱验证
+  const isValidEmail = (email: string) => {
+    const result = validateEmail(email);
+    return result.isValid;
+  }
 
   // 提交表单到后端，包含验证码票据
   const submitWithCaptcha = async (ticket: string, randstr: string) => {
@@ -142,36 +149,40 @@ export default function WaitingListForm({ captchaReady: externalCaptchaReady }: 
       const data = await response.json()
 
       if (response.ok) {
+        // 使用国际化key显示消息
+        const messageText = data.messageKey ? t(data.messageKey) : data.message;
         setMessage({
-          text: data.message,
+          text: messageText,
           type: 'success'
         })
         setEmail('')
         // 显示成功Toast
         toaster.success({
-          title: "订阅成功",
-          description: data.message,
+          title: t('common.success'),
+          description: messageText,
         })
       } else {
+        // 使用国际化key显示错误消息
+        const errorText = data.errorKey ? t(data.errorKey) : data.error;
         setMessage({
-          text: data.error,
+          text: errorText,
           type: 'error'
         })
         // 显示错误Toast
         toaster.error({
-          title: "订阅失败",
-          description: data.error,
+          title: t('common.error'),
+          description: errorText,
         })
       }
             } catch {
-          const errorMessage = '抱歉，提交过程中出现了问题，请稍后再试。'
+          const errorMessage = t('waitingList.requestFailed')
           setMessage({
             text: errorMessage,
             type: 'error'
           })
           // 显示错误Toast
           toaster.error({
-            title: "请求失败",
+            title: t('common.error'),
             description: errorMessage,
           })
         } finally {
@@ -203,17 +214,18 @@ export default function WaitingListForm({ captchaReady: externalCaptchaReady }: 
     if (!email.trim()) {
       setIsError(true)
       setMessage({
-        text: '请输入邮箱地址',
+        text: t('validation.emailRequired'),
         type: 'error'
       })
       return
     }
     
     // 验证邮箱格式
-    if (!isValidEmail(email)) {
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.isValid) {
       setIsError(true)
       setMessage({
-        text: '请输入有效的电子邮箱地址',
+        text: emailValidation.error || t('validation.emailInvalid'),
         type: 'error'
       })
       return
@@ -222,7 +234,7 @@ export default function WaitingListForm({ captchaReady: externalCaptchaReady }: 
     // 检查验证码SDK是否准备就绪
     if (!captchaReady || (!window.TencentCaptcha)) {
       setMessage({
-        text: '验证码组件正在加载中，请稍后再试。',
+        text: t('waitingList.captchaLoading'),
         type: 'error'
       })
       return
@@ -244,8 +256,8 @@ export default function WaitingListForm({ captchaReady: externalCaptchaReady }: 
           
           // 显示验证码通过Toast
           toaster.success({
-            title: "验证码已通过",
-            description: "正在进行安全验证...",
+            title: t('captcha.verified'),
+            description: t('waitingList.captchaSuccess'),
           })
           submitWithCaptcha(ticket, randstr)
         } else {
@@ -256,13 +268,13 @@ export default function WaitingListForm({ captchaReady: externalCaptchaReady }: 
           closeLoadingToast()
           
           setMessage({
-            text: '验证码验证失败，请重试。',
+            text: t('waitingList.captchaFailed'),
             type: 'error'
           })
           // 显示验证失败Toast
           toaster.error({
-            title: "验证失败",
-            description: "验证码验证失败，请重试。",
+            title: t('captcha.failed'),
+            description: t('waitingList.captchaFailed'),
           })
         }
       },
@@ -275,8 +287,8 @@ export default function WaitingListForm({ captchaReady: externalCaptchaReady }: 
     // 显示正在进行安全验证Toast
     console.log('显示loading Toast')
     const toastId = toaster.create({
-      title: "安全验证",
-      description: "正在进行安全验证...",
+      title: t('captcha.title'),
+      description: t('waitingList.securityVerification'),
       type: "loading",
     })
     console.log('获取到Toast ID:', toastId)
@@ -302,7 +314,7 @@ export default function WaitingListForm({ captchaReady: externalCaptchaReady }: 
         >
           <Alert.Indicator />
           <Alert.Title fontSize="sm" fontWeight="500">
-            {message?.text || "请输入有效的电子邮箱地址"}
+            {message?.text || t('validation.emailInvalid')}
           </Alert.Title>
         </Alert.Root>
       )}
@@ -316,7 +328,7 @@ export default function WaitingListForm({ captchaReady: externalCaptchaReady }: 
             if (isError) setIsError(false)
             if (message) setMessage(null)
           }}
-          placeholder="请输入您的电子邮箱"
+          placeholder={t('waitingList.emailPlaceholder')}
           bg="var(--card-background)"
           borderColor={isError ? 'var(--error-text)' : 'var(--border-color)'}
           _hover={{
@@ -352,7 +364,7 @@ export default function WaitingListForm({ captchaReady: externalCaptchaReady }: 
           height={{ base: "36px", md: "40px" }}
           alignSelf="center"
         >
-          {isLoading ? '提交中...' : '提交'}
+          {isLoading ? t('waitingList.submitting') : t('waitingList.submitButton')}
           {!isLoading && <MdSend style={{ marginLeft: '8px' }} />}
         </Button>
       </Stack>

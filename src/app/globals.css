@@ -40,9 +40,24 @@
   --footer-border: #e2e8f0;
 }
 
-/* 深色主题 */
+/* 深色主题 - 支持ChakraUI的暗黑模式 */
+[data-theme="dark"], .chakra-ui-dark {
+  --background: #0f172a;
+  --gradient-start: #1e293b;
+  --gradient-end: #0f172a;
+  --card-background: #1e293b;
+  --foreground: #f8fafc;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+  --hover-border: #475569;
+  --footer-border: #334155;
+}
+
+/* 兼容原有的媒体查询方式 */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --background: #0f172a;
     --gradient-start: #1e293b;
     --gradient-end: #0f172a;

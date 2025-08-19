@@ -11,11 +11,17 @@ export default function ThemeToggle() {
   useEffect(() => {
     setMounted(true)
     if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme')
+      const savedTheme = localStorage.getItem('chakra-ui-color-mode')
       if (savedTheme) {
         setIsDark(savedTheme === 'dark')
+        document.documentElement.setAttribute('data-theme', savedTheme)
+        if (savedTheme === 'dark') {
+          document.documentElement.classList.add('chakra-ui-dark')
+        }
       } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         setIsDark(true)
+        document.documentElement.setAttribute('data-theme', 'dark')
+        document.documentElement.classList.add('chakra-ui-dark')
       }
     }
   }, [])
@@ -26,13 +32,13 @@ export default function ThemeToggle() {
     
     if (typeof window !== 'undefined') {
       if (isDark) {
-        document.documentElement.classList.add('dark')
+        document.documentElement.classList.add('chakra-ui-dark')
         document.documentElement.setAttribute('data-theme', 'dark')
       } else {
-        document.documentElement.classList.remove('dark')
-        document.documentElement.removeAttribute('data-theme')
+        document.documentElement.classList.remove('chakra-ui-dark')
+        document.documentElement.setAttribute('data-theme', 'light')
       }
-      localStorage.setItem('theme', isDark ? 'dark' : 'light')
+      localStorage.setItem('chakra-ui-color-mode', isDark ? 'dark' : 'light')
     }
   }, [isDark, mounted])
 
@@ -40,36 +46,29 @@ export default function ThemeToggle() {
     setIsDark(!isDark)
   }
 
-  // 避免 SSR 水合不匹配
-  if (!mounted) {
-    return null
-  }
-
   return (
-    <Button
-      aria-label={isDark ? '切换到亮色模式' : '切换到暗色模式'}
-      onClick={toggleTheme}
-      variant="ghost"
-      size="md"
-      position="fixed"
-      top={4}
-      right={4}
-      zIndex={1000}
-      bg={isDark ? 'gray.700' : 'white'}
-      color={isDark ? 'gray.300' : 'gray.600'}
-      _hover={{
-        bg: isDark ? 'gray.600' : 'gray.100',
-        color: isDark ? 'white' : 'gray.800',
-      }}
-      borderRadius="full"
-      boxShadow="md"
-      width="40px"
-      height="40px"
-      minWidth="40px"
-    >
-      <Box fontSize="20px">
-        {isDark ? '☀️' : '🌙'}
-      </Box>
-    </Button>
+    <div suppressHydrationWarning>
+      <Button
+        aria-label={mounted ? (isDark ? '切换到亮色模式' : '切换到暗色模式') : '主题切换'}
+        onClick={toggleTheme}
+        variant="ghost"
+        size="md"
+        position="fixed"
+        top={4}
+        right={4}
+        zIndex={1000}
+        borderRadius="full"
+        boxShadow="md"
+        width="40px"
+        height="40px"
+        minWidth="40px"
+        disabled={!mounted}
+        opacity={mounted ? 1 : 0.5}
+      >
+        <Box fontSize="20px">
+          {mounted ? (isDark ? '☀️' : '🌙') : '🌙'}
+        </Box>
+      </Button>
+    </div>
   )
 }

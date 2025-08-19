@@ -5,6 +5,7 @@ import { Providers } from "./providers";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeScript } from "@/components/ui/theme-script";
 
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],

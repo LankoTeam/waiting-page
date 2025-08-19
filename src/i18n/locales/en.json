@@ -1,0 +1,64 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Information"
+  },
+  "navigation": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "waitingList": {
+    "title": "Join LANKO Waiting List",
+    "subtitle": "Be the first to know when LANKO launches",
+    "description": "Enter your email address below to join our exclusive waiting list. We'll notify you as soon as LANKO is available.",
+    "emailPlaceholder": "Enter your email address",
+    "submitButton": "Join Waiting List",
+    "submitting": "Submitting...",
+    "successMessage": "Thank you for subscribing! We'll notify you when LANKO launches.",
+    "errorMessage": "Please enter a valid email address",
+    "captchaLoading": "Captcha is loading, please wait...",
+    "captchaFailed": "Captcha verification failed, please try again.",
+    "captchaSuccess": "Captcha verified, proceeding with security verification...",
+    "securityVerification": "Security verification in progress...",
+    "requestFailed": "Sorry, there was a problem during submission. Please try again later.",
+    "alreadySubscribed": "This email address is already on the waiting list.",
+    "temporaryEmailNotAllowed": "Temporary email addresses are not supported. Please use a real email address."
+  },
+  "validation": {
+    "emailRequired": "Email address is required",
+    "emailInvalid": "Please enter a valid email address",
+    "emailFormatInvalid": "Email address format is invalid",
+    "emailContainsInvalidChars": "Email address contains invalid characters",
+    "emailTooLong": "Email address is too long",
+    "emailTooShort": "Email address is too short",
+    "emailLocalPartTooLong": "Email username part is too long",
+    "emailDomainTooLong": "Email domain is too long",
+    "emailStartsWithDot": "Email cannot start with a dot",
+    "emailEndsWithDot": "Email cannot end with a dot",
+    "emailConsecutiveDots": "Email cannot contain consecutive dots",
+    "emailTopLevelDomainTooShort": "Top-level domain is too short",
+    "emailNonAsciiChars": "Email address cannot contain non-ASCII characters like Chinese periods",
+    "emailEmpty": "Email address cannot be empty"
+  },
+  "captcha": {
+    "title": "Security Verification",
+    "description": "Please complete the security verification to continue",
+    "verifying": "Verifying...",
+    "verified": "Verified",
+    "failed": "Verification failed"
+  },
+  "footer": {
+    "copyright": "© 2025 LANKO. All rights reserved."
+  },
+  "language": {
+    "en": "English",
+    "zh": "简体中文"
+  }
+}

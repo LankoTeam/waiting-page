@@ -1,0 +1,64 @@
+{
+  "common": {
+    "loading": "加载中...",
+    "submit": "提交",
+    "cancel": "取消",
+    "confirm": "确认",
+    "error": "错误",
+    "success": "成功",
+    "warning": "警告",
+    "info": "信息"
+  },
+  "navigation": {
+    "home": "首页",
+    "about": "关于",
+    "contact": "联系"
+  },
+  "waitingList": {
+    "title": "加入LANKO等候列表",
+    "subtitle": "第一时间了解LANKO上线信息",
+    "description": "在下方输入您的邮箱地址，加入我们的专属等候列表。我们会在LANKO可用时立即通知您。",
+    "emailPlaceholder": "请输入您的电子邮箱",
+    "submitButton": "加入等候列表",
+    "submitting": "提交中...",
+    "successMessage": "感谢您的订阅！我们会在LANKO上线时通知您。",
+    "errorMessage": "请输入有效的电子邮箱地址",
+    "captchaLoading": "验证码组件正在加载中，请稍后再试。",
+    "captchaFailed": "验证码验证失败，请重试。",
+    "captchaSuccess": "验证码已通过，正在进行安全验证...",
+    "securityVerification": "正在进行安全验证...",
+    "requestFailed": "抱歉，提交过程中出现了问题，请稍后再试。",
+    "alreadySubscribed": "该邮箱地址已经在等候列表中了。",
+    "temporaryEmailNotAllowed": "不支持临时邮箱地址，请使用真实邮箱"
+  },
+  "validation": {
+    "emailRequired": "请输入邮箱地址",
+    "emailInvalid": "请输入有效的电子邮箱地址",
+    "emailFormatInvalid": "邮箱地址格式无效",
+    "emailContainsInvalidChars": "邮箱地址包含无效字符",
+    "emailTooLong": "邮箱地址过长",
+    "emailTooShort": "邮箱地址过短",
+    "emailLocalPartTooLong": "邮箱用户名部分过长",
+    "emailDomainTooLong": "邮箱域名过长",
+    "emailStartsWithDot": "邮箱用户名不能以点号开头",
+    "emailEndsWithDot": "邮箱用户名不能以点号结尾",
+    "emailConsecutiveDots": "邮箱地址不能包含连续点号",
+    "emailTopLevelDomainTooShort": "顶级域名长度不足",
+    "emailNonAsciiChars": "邮箱地址不能包含中文句号等非ASCII字符",
+    "emailEmpty": "邮箱地址不能为空"
+  },
+  "captcha": {
+    "title": "安全验证",
+    "description": "请完成安全验证以继续",
+    "verifying": "验证中...",
+    "verified": "已验证",
+    "failed": "验证失败"
+  },
+  "footer": {
+    "copyright": "© 2025 LANKO. 保留所有权利。"
+  },
+  "language": {
+    "en": "English",
+    "zh": "简体中文"
+  }
+}

@@ -301,7 +301,7 @@ export default function WaitingListForm({ captchaReady: externalCaptchaReady }: 
           borderRadius="md"
         >
           <Alert.Indicator />
-          <Alert.Title fontSize="sm">
+          <Alert.Title fontSize="sm" fontWeight="500">
             {message?.text || "请输入有效的电子邮箱地址"}
           </Alert.Title>
         </Alert.Root>

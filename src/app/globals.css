@@ -41,7 +41,7 @@
 }
 
 /* 深色主题 - 支持ChakraUI的暗黑模式 */
-[data-theme="dark"], .chakra-ui-dark {
+.dark {
   --background: #0f172a;
   --gradient-start: #1e293b;
   --gradient-end: #0f172a;
@@ -57,7 +57,7 @@
 
 /* 兼容原有的媒体查询方式 */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root:not(.light) {
     --background: #0f172a;
     --gradient-start: #1e293b;
     --gradient-end: #0f172a;

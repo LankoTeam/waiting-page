@@ -30,12 +30,16 @@ export default function Home() {
             <Stack gap={4} textAlign="center" mb={8}>
               <Heading
                 as="h1"
-                fontSize="3xl"
+                fontSize="6xl"
                 fontWeight="700"
                 color="var(--brand-secondary)"
                 mb={2}
+                style={{
+                  fontFamily: 'var(--font-reddit-sans)',
+                  letterSpacing: '-0.02em'
+                }}
               >
-                LANKO蓝扣
+                LANKO
               </Heading>
               <Heading
                 as="h2"
@@ -52,7 +56,7 @@ export default function Home() {
                 maxW="700px"
                 lineHeight="tall"
               >
-                专为国人设计的全新MeetUp活动平台，敬请期待。
+                专为国人设计的全新MeetUp活动平台
               </Text>
             </Stack>
 

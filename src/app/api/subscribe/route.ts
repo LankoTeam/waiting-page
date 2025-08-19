@@ -173,7 +173,7 @@ export async function POST(request: Request) {
     // Zoho API 返回 code: 0 表示成功
     if (data.status === 'success' || data.code === 0) {
       return NextResponse.json({
-        message: '感谢您的订阅，我们会在LANKO蓝扣上线时通知您。',
+        message: '感谢您的订阅，我们会在LANKO上线时通知您。',
       });
     } else {
       // 处理已存在的订阅者

@@ -21,6 +21,7 @@ const system = createSystem(defaultConfig, {
       },
     },
   },
+  cssVarsRoot: ':host, :root',
 })
 
 export function Providers({ children }: { children: React.ReactNode }) {

@@ -281,6 +281,18 @@ export default function WaitingListForm() {
       mx="auto"
       px={{ base: 1, sm: 0 }}
     >
+      {(message || isError) && (
+          <Alert.Root 
+            status={message?.type || "error"}
+            mb={4}
+            borderRadius="md"
+          >
+            <Alert.Indicator />
+            <Alert.Title fontSize="sm">
+              {message?.text || "请输入有效的电子邮箱地址"}
+            </Alert.Title>
+          </Alert.Root>
+        )}
       <Stack gap={4} mb={4}>
         <Input
           type="email"
@@ -330,20 +342,6 @@ export default function WaitingListForm() {
           {!isLoading && <MdSend style={{ marginLeft: '8px' }} />}
         </Button>
       </Stack>
-      
-      {/* 只显示一个Alert，优先显示message，如果没有message则显示isError */}
-      {(message || isError) && (
-        <Alert.Root 
-          status={message?.type || "error"}
-          mt={3}
-          borderRadius="md"
-        >
-          <Alert.Indicator />
-          <Alert.Title fontSize="sm">
-            {message?.text || "请输入有效的电子邮箱地址"}
-          </Alert.Title>
-        </Alert.Root>
-      )}
     </Box>
   )
 }

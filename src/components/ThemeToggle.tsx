@@ -15,9 +15,13 @@ export default function ThemeToggle() {
       if (savedTheme) {
         setIsDark(savedTheme === 'dark')
         document.documentElement.setAttribute('data-theme', savedTheme)
+        if (savedTheme === 'dark') {
+          document.documentElement.classList.add('chakra-ui-dark')
+        }
       } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         setIsDark(true)
         document.documentElement.setAttribute('data-theme', 'dark')
+        document.documentElement.classList.add('chakra-ui-dark')
       }
     }
   }, [])
@@ -42,30 +46,29 @@ export default function ThemeToggle() {
     setIsDark(!isDark)
   }
 
-  // 避免 SSR 水合不匹配
-  if (!mounted) {
-    return null
-  }
-
   return (
-    <Button
-      aria-label={isDark ? '切换到亮色模式' : '切换到暗色模式'}
-      onClick={toggleTheme}
-      variant="ghost"
-      size="md"
-      position="fixed"
-      top={4}
-      right={4}
-      zIndex={1000}
-      borderRadius="full"
-      boxShadow="md"
-      width="40px"
-      height="40px"
-      minWidth="40px"
-    >
-      <Box fontSize="20px">
-        {isDark ? '☀️' : '🌙'}
-      </Box>
-    </Button>
+    <div suppressHydrationWarning>
+      <Button
+        aria-label={mounted ? (isDark ? '切换到亮色模式' : '切换到暗色模式') : '主题切换'}
+        onClick={toggleTheme}
+        variant="ghost"
+        size="md"
+        position="fixed"
+        top={4}
+        right={4}
+        zIndex={1000}
+        borderRadius="full"
+        boxShadow="md"
+        width="40px"
+        height="40px"
+        minWidth="40px"
+        disabled={!mounted}
+        opacity={mounted ? 1 : 0.5}
+      >
+        <Box fontSize="20px">
+          {mounted ? (isDark ? '☀️' : '🌙') : '🌙'}
+        </Box>
+      </Button>
+    </div>
   )
 }

@@ -281,7 +281,7 @@ export default function WaitingListForm() {
       mx="auto"
       px={{ base: 1, sm: 0 }}
     >
-      <Stack gap={4} mb={4}>
+      <Stack gap={4}>
         <Input
           type="email"
           value={email}

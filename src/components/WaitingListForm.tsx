@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Box, Input, Button, Alert, Stack } from '@chakra-ui/react'
+import { Box, Input, Button, Stack, Alert } from '@chakra-ui/react'
 import { toaster } from '@/components/ui/toaster'
 import { MdSend } from "react-icons/md"
 
@@ -49,7 +49,7 @@ export default function WaitingListForm() {
         try {
           toaster.dismiss(loadingToastIdRef.current!)
           loadingToastIdRef.current = null
-        } catch (error) {
+        } catch {
           console.log('单个Toast关闭失败，关闭所有Toast')
           toaster.dismiss()
           loadingToastIdRef.current = null
@@ -98,8 +98,8 @@ export default function WaitingListForm() {
           }
           // 关闭所有Toast
           toaster.dismiss()
-        } catch (error) {
-          console.log('Toast清理过程中发生错误:', error)
+        } catch {
+          console.log('Toast清理过程中发生错误')
         }
       }, 0)
     }
@@ -151,18 +151,18 @@ export default function WaitingListForm() {
           description: data.error,
         })
       }
-    } catch (error) {
-      const errorMessage = '抱歉，提交过程中出现了问题，请稍后再试。'
-      setMessage({
-        text: errorMessage,
-        type: 'error'
-      })
-      // 显示错误Toast
-      toaster.error({
-        title: "请求失败",
-        description: errorMessage,
-      })
-    } finally {
+            } catch {
+          const errorMessage = '抱歉，提交过程中出现了问题，请稍后再试。'
+          setMessage({
+            text: errorMessage,
+            type: 'error'
+          })
+          // 显示错误Toast
+          toaster.error({
+            title: "请求失败",
+            description: errorMessage,
+          })
+        } finally {
       setIsLoading(false)
       // 确保在任何情况下都关闭loading Toast - 使用setTimeout避免flushSync错误
       if (loadingToastIdRef.current) {
@@ -171,10 +171,10 @@ export default function WaitingListForm() {
           try {
             toaster.dismiss(loadingToastIdRef.current!)
             loadingToastIdRef.current = null
-          } catch (error) {
-            console.log('Toast关闭失败:', error)
-            loadingToastIdRef.current = null
-          }
+                  } catch {
+          console.log('Toast关闭失败')
+          loadingToastIdRef.current = null
+        }
         }, 0)
       }
     }
@@ -281,6 +281,20 @@ export default function WaitingListForm() {
       mx="auto"
       px={{ base: 1, sm: 0 }}
     >
+      {/* 只显示一个Alert，优先显示message，如果没有message则显示isError */}
+      {(message || isError) && (
+        <Alert.Root 
+          status={message?.type || "error"}
+          mb={4}
+          borderRadius="md"
+        >
+          <Alert.Indicator />
+          <Alert.Title fontSize="sm">
+            {message?.text || "请输入有效的电子邮箱地址"}
+          </Alert.Title>
+        </Alert.Root>
+      )}
+
       <Stack gap={4}>
         <Input
           type="email"

@@ -36,6 +36,7 @@ export default function RootLayout({
           src="https://ca.turing.captcha.qcloud.com/TJNCaptcha-global.js" 
           async
         ></script>
+        <script defer src="https://analytics.nexaorion.tech/script.js" data-website-id="984c3e19-6edd-4c01-b3d3-a55e80c1b773"></script>
       </head>
       <body className={`${inter.variable} antialiased`}>
         <ThemeScript />
